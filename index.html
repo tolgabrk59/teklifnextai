@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Satış Teklif Yönetim Sistemi - Müşteri ve ürün yönetimi, teklif oluşturma, PDF çıktısı">
+    <title>Satış Teklif Sistemi</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>Teklif Sistemi</span>
+            </div>
+            <button class="btn btn-primary" onclick="QuoteUI.showCreateModal()">
+                <i class="fas fa-plus"></i>
+                Yeni Teklif
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('dashboard')">
+                <i class="fas fa-chart-pie"></i>
+                Dashboard
+            </button>
+            <button class="tab-btn" onclick="showTab('customers')">
+                <i class="fas fa-users"></i>
+                Müşteriler
+            </button>
+            <button class="tab-btn" onclick="showTab('products')">
+                <i class="fas fa-box"></i>
+                Ürünler
+            </button>
+            <button class="tab-btn" onclick="showTab('quotes')">
+                <i class="fas fa-file-invoice"></i>
+                Teklifler
+            </button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard-tab" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon customers">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Toplam Müşteri</h3>
+                        <div class="value" id="stat-customers">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon products">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Toplam Ürün</h3>
+                        <div class="value" id="stat-products">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon quotes">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Toplam Teklif</h3>
+                        <div class="value" id="stat-quotes">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon revenue">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Kabul Edilen</h3>
+                        <div class="value" id="stat-revenue">$0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-clock"></i> Son Teklifler</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Teklif No</th>
+                                    <th>Müşteri</th>
+                                    <th>Tutar</th>
+                                    <th>Durum</th>
+                                    <th>Tarih</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboard-quotes-body">
+                                <tr>
+                                    <td colspan="5" class="empty-state">
+                                        <i class="fas fa-file-invoice"></i>
+                                        <p>Henüz teklif yok</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customers Tab -->
+        <div id="customers-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-users"></i> Müşteriler</h2>
+                    <button class="btn btn-primary" onclick="CustomerUI.showAddModal()">
+                        <i class="fas fa-plus"></i>
+                        Yeni Müşteri
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ad Soyad</th>
+                                    <th>Şirket</th>
+                                    <th>E-posta</th>
+                                    <th>Telefon</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customers-table-body">
+                                <tr>
+                                    <td colspan="5" class="empty-state">
+                                        <i class="fas fa-users"></i>
+                                        <p>Henüz müşteri eklenmemiş</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Tab -->
+        <div id="products-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-box"></i> Ürünler</h2>
+                    <button class="btn btn-primary" onclick="ProductUI.showAddModal()">
+                        <i class="fas fa-plus"></i>
+                        Yeni Ürün
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;">Görsel</th>
+                                    <th>Kod</th>
+                                    <th>Ürün Adı</th>
+                                    <th>Açıklama</th>
+                                    <th>Fiyat</th>
+                                    <th>Birim</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-table-body">
+                                <tr>
+                                    <td colspan="6" class="empty-state">
+                                        <i class="fas fa-box"></i>
+                                        <p>Henüz ürün eklenmemiş</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quotes Tab -->
+        <div id="quotes-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-file-invoice"></i> Teklifler</h2>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <div style="position: relative;">
+                            <i class="fas fa-search"
+                                style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #999;"></i>
+                            <input type="text" id="quote-search" placeholder="Teklif ara..."
+                                style="padding: 8px 10px 8px 35px; border: 1px solid #ddd; border-radius: 6px; width: 200px;"
+                                oninput="QuoteUI.filterList(this.value)">
+                        </div>
+                        <button class="btn btn-primary" onclick="QuoteUI.showCreateModal()">
+                            <i class="fas fa-plus"></i>
+                            Yeni Teklif
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Teklif No</th>
+                                    <th>Müşteri</th>
+                                    <th>Tutar</th>
+                                    <th>Durum</th>
+                                    <th>Tarih</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quotes-table-body">
+                                <tr>
+                                    <td colspan="6" class="empty-state">
+                                        <i class="fas fa-file-invoice"></i>
+                                        <p>Henüz teklif oluşturulmamış</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Modal -->
+    <div id="customer-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="customer-modal-title">Yeni Müşteri</h3>
+                <button class="modal-close" onclick="Modal.hide('customer-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="customer-form" onsubmit="event.preventDefault(); CustomerUI.save();">
+                <div class="modal-body">
+                    <input type="hidden" id="customer-id">
+
+                    <div class="form-group">
+                        <label for="customer-name">Ad Soyad *</label>
+                        <input type="text" id="customer-name" required placeholder="Müşteri adı">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="customer-company">Şirket</label>
+                        <input type="text" id="customer-company" placeholder="Şirket adı">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customer-email">E-posta</label>
+                            <input type="email" id="customer-email" placeholder="ornek@mail.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="customer-phone">Telefon</label>
+                            <input type="tel" id="customer-phone" placeholder="05XX XXX XX XX">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="customer-address">Adres</label>
+                        <textarea id="customer-address" placeholder="Müşteri adresi"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" onclick="Modal.hide('customer-modal')">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="product-modal-title">Yeni Ürün</h3>
+                <button class="modal-close" onclick="Modal.hide('product-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="product-form" onsubmit="event.preventDefault(); ProductUI.save();">
+                <div class="modal-body">
+                    <input type="hidden" id="product-id">
+                    <input type="hidden" id="product-image-url">
+
+                    <!-- URL Scraping Section -->
+                    <div class="form-group"
+                        style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <label for="product-url"><i class="fas fa-link"></i> Ürün Linki (Otomatik Doldur)</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="url" id="product-url" placeholder="https://..." style="flex: 1;">
+                            <button type="button" class="btn btn-primary" onclick="ProductUI.scrapeUrl()"
+                                id="scrape-btn">
+                                <i class="fas fa-magic"></i> Bilgi Çek
+                            </button>
+                        </div>
+                        <div id="scrape-status" style="margin-top: 8px; font-size: 12px; color: #666;"></div>
+                    </div>
+
+                    <!-- Image Preview -->
+                    <div id="product-image-preview" style="display: none; text-align: center; margin-bottom: 15px;">
+                        <img id="preview-img" src="" alt="Ürün Görseli"
+                            style="max-width: 150px; max-height: 150px; border-radius: 8px; border: 1px solid #ddd;">
+                        <button type="button" class="btn" style="display: block; margin: 8px auto; font-size: 11px;"
+                            onclick="ProductUI.clearImage()">
+                            <i class="fas fa-times"></i> Görseli Kaldır
+                        </button>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="product-code">Ürün Kodu *</label>
+                            <input type="text" id="product-code" required placeholder="ÜRN-001">
+                        </div>
+                        <div class="form-group">
+                            <label for="product-name">Ürün Adı *</label>
+                            <input type="text" id="product-name" required placeholder="Ürün adı">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-description">Açıklama</label>
+                        <textarea id="product-description" placeholder="Ürün açıklaması"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="product-price">Varsayılan Fiyat</label>
+                            <input type="number" id="product-price" step="0.01" min="0" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="product-currency">Para Birimi</label>
+                            <select id="product-currency">
+                                <option value="USD">USD ($)</option>
+                                <option value="EUR">EUR (€)</option>
+                                <option value="TRY">TRY (₺)</option>
+                                <option value="GBP">GBP (£)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-unit">Birim</label>
+                        <input type="text" id="product-unit" placeholder="Adet, Kg, Metre vb." value="Adet">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" onclick="Modal.hide('product-modal')">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quote Modal -->
+    <div id="quote-modal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3>Yeni Teklif Oluştur</h3>
+                <button class="modal-close" onclick="Modal.hide('quote-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Quote Info -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quote-number">Teklif No</label>
+                        <input type="text" id="quote-number" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="quote-currency">Para Birimi</label>
+                        <select id="quote-currency"
+                            onchange="currentQuote.currency = this.value; QuoteUI.renderItems(); QuoteUI.updateTotal();">
+                            <option value="USD">USD ($)</option>
+                            <option value="EUR">EUR (€)</option>
+                            <option value="TRY">TRY (₺)</option>
+                            <option value="GBP">GBP (£)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Customer Selection -->
+                <div class="form-group autocomplete-container">
+                    <label for="quote-customer-search">Müşteri *</label>
+                    <input type="text" id="quote-customer-search" placeholder="Müşteri adı veya şirket ara...">
+                    <div id="customer-autocomplete" class="autocomplete-dropdown"></div>
+                </div>
+
+                <!-- Product Search -->
+                <div class="form-group autocomplete-container">
+                    <label for="product-search-input">Ürün Ekle</label>
+                    <input type="text" id="product-search-input" placeholder="Ürün kodu veya adı ara...">
+                    <div id="product-autocomplete" class="autocomplete-dropdown"></div>
+                </div>
+
+                <!-- Quote Items -->
+                <div class="form-group">
+                    <label>Ürünler</label>
+                    <div id="quote-items-container" class="quote-items-container">
+                        <div class="empty-items">
+                            <i class="fas fa-shopping-cart"></i>
+                            <p>Henüz ürün eklenmedi</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total -->
+                <div class="quote-total-section">
+                    <h4>Genel Toplam</h4>
+                    <div class="total-value" id="quote-total">$0.00</div>
+                </div>
+
+                <!-- Additional Info -->
+                <div class="form-row" style="margin-top: 1rem;">
+                    <div class="form-group">
+                        <label for="quote-valid-days">Geçerlilik (Gün)</label>
+                        <input type="number" id="quote-valid-days" value="30" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="quote-notes">Notlar</label>
+                        <textarea id="quote-notes" placeholder="Teklif notları..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" onclick="Modal.hide('quote-modal')">İptal</button>
+                <button type="button" class="btn btn-primary" onclick="QuoteUI.save()">
+                    <i class="fas fa-save"></i>
+                    Teklifi Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Quote Modal -->
+    <div id="view-quote-modal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3>Teklif Detayı</h3>
+                <button class="modal-close" onclick="Modal.hide('view-quote-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="view-quote-id">
+                <div id="view-quote-content"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn"
+                    onclick="QuoteUI.updateStatus(parseInt(document.getElementById('view-quote-id').value), 'rejected')">
+                    <i class="fas fa-times"></i>
+                    Reddedildi
+                </button>
+                <button type="button" class="btn btn-success"
+                    onclick="QuoteUI.updateStatus(parseInt(document.getElementById('view-quote-id').value), 'accepted')">
+                    <i class="fas fa-check"></i>
+                    Kabul Edildi
+                </button>
+                <button type="button" class="btn btn-primary"
+                    onclick="QuoteUI.generatePDF(parseInt(document.getElementById('view-quote-id').value))">
+                    <i class="fas fa-file-pdf"></i>
+                    PDF İndir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/database.js"></script>
+    <script src="js/customers.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/quotes.js"></script>
+    <script src="js/fonts.js"></script>
+    <script src="js/pdf-generator.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
