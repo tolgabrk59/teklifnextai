@@ -107,38 +107,39 @@ LOGIN_PAGE = '''
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giriş - Teklif Sistemi</title>
+    <title>Giris - Teklif Sistemi</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #1B4EA4 0%, #0d2d5f 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .login-box { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 100%; max-width: 400px; }
-        .login-box h1 { text-align: center; color: #1B4EA4; margin-bottom: 30px; font-size: 24px; }
-        .login-box .logo { text-align: center; margin-bottom: 20px; font-size: 40px; color: #1B4EA4; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #333; }
-        .form-group input { width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; transition: border-color 0.3s; }
-        .form-group input:focus { outline: none; border-color: #1B4EA4; }
-        .btn { width: 100%; padding: 14px; background: #1B4EA4; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.3s; }
-        .btn:hover { background: #0d2d5f; }
-        .error { background: #fee; color: #c00; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{ font-family: 'Inter', sans-serif; background: #ffffff; min-height: 100vh; display: flex; align-items: center; justify-content: center; }}
+        .login-box {{ background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 40px rgba(27,78,164,0.15); width: 100%; max-width: 400px; border: 1px solid #e8f0fe; }}
+        .login-box h1 {{ text-align: center; color: #1B4EA4; margin-bottom: 30px; font-size: 20px; }}
+        .login-box .logo {{ text-align: center; margin-bottom: 20px; }}
+        .login-box .logo img {{ max-width: 200px; height: auto; }}
+        .form-group {{ margin-bottom: 20px; }}
+        .form-group label {{ display: block; margin-bottom: 8px; font-weight: 500; color: #1B4EA4; }}
+        .form-group input {{ width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; transition: border-color 0.3s; }}
+        .form-group input:focus {{ outline: none; border-color: #1B4EA4; }}
+        .btn {{ width: 100%; padding: 14px; background: #1B4EA4; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.3s; }}
+        .btn:hover {{ background: #0d2d5f; }}
+        .error {{ background: #fee; color: #c00; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; }}
     </style>
 </head>
 <body>
     <div class="login-box">
-        <div class="logo">📋</div>
+        <div class="logo"><img src="/images/nextai-logo.jpg" alt="Next AI Logo"></div>
         <h1>Teklif Sistemi</h1>
         {error}
         <form method="POST">
             <div class="form-group">
-                <label for="username">Kullanıcı Adı</label>
+                <label for="username">Kullanici Adi</label>
                 <input type="text" id="username" name="username" required autofocus>
             </div>
             <div class="form-group">
-                <label for="password">Şifre</label>
+                <label for="password">Sifre</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit" class="btn">Giriş Yap</button>
+            <button type="submit" class="btn">Giris Yap</button>
         </form>
     </div>
 </body>

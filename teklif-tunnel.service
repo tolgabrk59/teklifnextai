@@ -1,0 +1,14 @@
+[Unit]
+Description=Teklif Sistemi Cloudflare Tunnel
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tolgabrk
+ExecStart=/usr/bin/cloudflared tunnel --config /home/tolgabrk/.cloudflared/config-teklif.yml run
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

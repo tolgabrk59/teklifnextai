@@ -1,0 +1,15 @@
+[Unit]
+Description=Teklif Sistemi Flask Server
+After=network.target
+
+[Service]
+Type=simple
+User=tolgabrk
+WorkingDirectory=/home/tolgabrk/.gemini/antigravity/scratch/sales-quote-system
+Environment=PORT=5005
+ExecStart=/usr/bin/python3 /home/tolgabrk/.gemini/antigravity/scratch/sales-quote-system/web.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

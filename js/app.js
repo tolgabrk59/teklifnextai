@@ -153,9 +153,50 @@ async function updateDashboardStats() {
             .filter(q => q.status === 'accepted')
             .reduce((sum, q) => sum + q.total, 0);
         document.getElementById('stat-revenue').textContent = formatCurrency(totalRevenue, 'USD');
+
+        // Render recent quotes in dashboard
+        await renderDashboardQuotes(quotes.slice(0, 5), customers);
     } catch (error) {
         console.error('Dashboard güncellenemedi:', error);
     }
+}
+
+// Render recent quotes in dashboard
+async function renderDashboardQuotes(quotes, customers) {
+    const tbody = document.getElementById('dashboard-quotes-body');
+    if (!tbody) return;
+
+    const customerMap = {};
+    customers.forEach(c => customerMap[c.id] = c);
+
+    if (quotes.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="empty-state">
+                    <i class="fas fa-file-invoice"></i>
+                    <p>Henüz teklif yok</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    const statusTexts = { draft: 'Taslak', sent: 'Gönderildi', accepted: 'Kabul Edildi', rejected: 'Reddedildi' };
+    const statusClasses = { draft: 'status-draft', sent: 'status-sent', accepted: 'status-accepted', rejected: 'status-rejected' };
+
+    tbody.innerHTML = quotes.map(q => {
+        const customer = customerMap[q.customerId];
+        const customerName = customer ? customer.name : 'Bilinmeyen';
+        return `
+            <tr>
+                <td><code>${escapeHtml(q.quoteNumber)}</code></td>
+                <td>${escapeHtml(customerName)}</td>
+                <td class="text-right">${formatCurrency(q.total, q.currency)}</td>
+                <td><span class="status-badge ${statusClasses[q.status] || 'status-draft'}">${statusTexts[q.status] || 'Taslak'}</span></td>
+                <td>${formatDate(q.createdAt)}</td>
+            </tr>
+        `;
+    }).join('');
 }
 
 // Utility Functions
