@@ -3,12 +3,26 @@ import sqlite3
 import json
 import requests
 from bs4 import BeautifulSoup
-from flask import Flask, jsonify, request, send_from_directory, Response
+from flask import Flask, jsonify, request, send_from_directory, Response, session, redirect, url_for
 from datetime import datetime
 from urllib.parse import urljoin, urlparse
+from functools import wraps
 
 app = Flask(__name__, static_url_path='', static_folder='.')
+app.secret_key = 'nextai-teklif-sistemi-2026-secret-key'
 DB_NAME = 'sales_quote.db'
+
+# Login credentials
+VALID_USERNAME = 'tolgabrk'
+VALID_PASSWORD = 'Aras2017.'
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('logged_in'):
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 def get_db_connection():
     conn = sqlite3.connect(DB_NAME)
@@ -87,7 +101,71 @@ init_db()
 
 # --- Static File Serving ---
 
+LOGIN_PAGE = '''
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş - Teklif Sistemi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #1B4EA4 0%, #0d2d5f 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 100%; max-width: 400px; }
+        .login-box h1 { text-align: center; color: #1B4EA4; margin-bottom: 30px; font-size: 24px; }
+        .login-box .logo { text-align: center; margin-bottom: 20px; font-size: 40px; color: #1B4EA4; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #333; }
+        .form-group input { width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; transition: border-color 0.3s; }
+        .form-group input:focus { outline: none; border-color: #1B4EA4; }
+        .btn { width: 100%; padding: 14px; background: #1B4EA4; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.3s; }
+        .btn:hover { background: #0d2d5f; }
+        .error { background: #fee; color: #c00; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <div class="logo">📋</div>
+        <h1>Teklif Sistemi</h1>
+        {error}
+        <form method="POST">
+            <div class="form-group">
+                <label for="username">Kullanıcı Adı</label>
+                <input type="text" id="username" name="username" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="password">Şifre</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn">Giriş Yap</button>
+        </form>
+    </div>
+</body>
+</html>
+'''
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = ''
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if username == VALID_USERNAME and password == VALID_PASSWORD:
+            session['logged_in'] = True
+            session['username'] = username
+            return redirect(url_for('index'))
+        else:
+            error = '<div class="error">Kullanıcı adı veya şifre hatalı!</div>'
+    return LOGIN_PAGE.format(error=error)
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
 @app.route('/')
+@login_required
 def index():
     return send_from_directory('.', 'index.html')
 
