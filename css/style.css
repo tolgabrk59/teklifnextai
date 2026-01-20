@@ -4,8 +4,8 @@
 
 :root {
     /* Colors */
-    --primary: #3498db;
-    --primary-dark: #2980b9;
+    --primary: #1B4EA4;
+    --primary-dark: #0d2d5f;
     --secondary: #2ecc71;
     --secondary-dark: #27ae60;
     --danger: #e74c3c;
@@ -13,23 +13,23 @@
     --warning: #f39c12;
     --info: #9b59b6;
     
-    /* Neutral colors */
-    --bg-dark: #0f1419;
-    --bg-card: #1a1f2e;
-    --bg-input: #252b3b;
-    --text-primary: #ffffff;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
-    --border-color: #334155;
+    /* Light theme colors */
+    --bg-dark: #ffffff;
+    --bg-card: #ffffff;
+    --bg-input: #f5f7fa;
+    --text-primary: #1a1a2e;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --border-color: #e2e8f0;
     
-    /* Glassmorphism */
-    --glass-bg: rgba(26, 31, 46, 0.8);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    /* Glassmorphism - light mode */
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(27, 78, 164, 0.1);
     
     /* Shadows */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.4);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.15);
     
     /* Spacing */
     --spacing-xs: 0.25rem;
@@ -64,7 +64,7 @@ html {
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg-dark);
+    background: #f8fafc;
     color: var(--text-primary);
     line-height: 1.6;
     min-height: 100vh;
