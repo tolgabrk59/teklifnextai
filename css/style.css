@@ -900,25 +900,78 @@ td code {
         padding: var(--spacing-md);
     }
 
-    /* Tables */
+    /* Tables - Card Layout on Mobile */
     .table-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+        overflow-x: visible;
     }
 
     table {
-        min-width: 600px;
+        min-width: unset;
+        display: block;
     }
 
-    th,
+    thead {
+        display: none;
+    }
+
+    tbody {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    tr {
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: var(--spacing-md);
+        gap: var(--spacing-xs);
+    }
+
+    tr:hover {
+        box-shadow: var(--shadow-sm);
+    }
+
     td {
-        padding: var(--spacing-sm);
-        font-size: 0.8rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--spacing-xs) 0;
+        border-bottom: 1px dashed var(--border-color);
+        font-size: 0.85rem;
+    }
+
+    td:last-child {
+        border-bottom: none;
+    }
+
+    td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        text-transform: uppercase;
     }
 
     td.actions {
-        flex-wrap: wrap;
+        justify-content: flex-end;
+        padding-top: var(--spacing-sm);
         gap: var(--spacing-xs);
+    }
+
+    td.actions::before {
+        display: none;
+    }
+
+    td.empty-state {
+        text-align: center;
+        flex-direction: column;
+    }
+
+    td.empty-state::before {
+        display: none;
     }
 
     .btn-icon {

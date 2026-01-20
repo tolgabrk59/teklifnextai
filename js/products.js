@@ -71,12 +71,12 @@ const ProductUI = {
                 : `<i class="fas fa-image" style="color: #ccc; font-size: 20px;"></i>`;
             return `
             <tr>
-                <td style="text-align: center;">${imgHtml}</td>
-                <td><code>${escapeHtml(p.code)}</code></td>
-                <td>${escapeHtml(p.name)}</td>
-                <td>${escapeHtml(p.description || '-')}</td>
-                <td class="text-right">${formatCurrency(p.price, p.currency)}</td>
-                <td>${escapeHtml(p.unit || 'Adet')}</td>
+                <td data-label="Görsel" style="text-align: center;">${imgHtml}</td>
+                <td data-label="Kod"><code>${escapeHtml(p.code)}</code></td>
+                <td data-label="Ürün Adı">${escapeHtml(p.name)}</td>
+                <td data-label="Açıklama">${escapeHtml(p.description || '-')}</td>
+                <td data-label="Fiyat" class="text-right">${formatCurrency(p.price, p.currency)}</td>
+                <td data-label="Birim">${escapeHtml(p.unit || 'Adet')}</td>
                 <td class="actions">
                     <button onclick="ProductUI.edit(${p.id})" class="btn-icon" title="Düzenle">
                         <i class="fas fa-edit"></i>

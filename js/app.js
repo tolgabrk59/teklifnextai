@@ -189,11 +189,11 @@ async function renderDashboardQuotes(quotes, customers) {
         const customerName = customer ? customer.name : 'Bilinmeyen';
         return `
             <tr>
-                <td><code>${escapeHtml(q.quoteNumber)}</code></td>
-                <td>${escapeHtml(customerName)}</td>
-                <td class="text-right">${formatCurrency(q.total, q.currency)}</td>
-                <td><span class="status-badge ${statusClasses[q.status] || 'status-draft'}">${statusTexts[q.status] || 'Taslak'}</span></td>
-                <td>${formatDate(q.createdAt)}</td>
+                <td data-label="Teklif No"><code>${escapeHtml(q.quoteNumber)}</code></td>
+                <td data-label="Müşteri">${escapeHtml(customerName)}</td>
+                <td data-label="Tutar" class="text-right">${formatCurrency(q.total, q.currency)}</td>
+                <td data-label="Durum"><span class="status-badge ${statusClasses[q.status] || 'status-draft'}">${statusTexts[q.status] || 'Taslak'}</span></td>
+                <td data-label="Tarih">${formatDate(q.createdAt)}</td>
             </tr>
         `;
     }).join('');
