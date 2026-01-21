@@ -78,7 +78,12 @@ class Database {
         try {
             const response = await fetch(`${this.baseUrl}/${storeName}`);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            return await response.json();
+            const data = await response.json();
+            // Handle paginated response format for customers
+            if (storeName === 'customers' && data.customers) {
+                return data.customers;
+            }
+            return data;
         } catch (error) {
             console.error('Error fetching all data:', error);
             throw error;
