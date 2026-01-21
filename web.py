@@ -179,10 +179,38 @@ def index():
 # CUSTOMERS
 @app.route('/api/customers', methods=['GET'])
 def get_customers():
+    # Pagination parameters
+    page = request.args.get('page', 1, type=int)
+    limit = request.args.get('limit', 50, type=int)
+    search = request.args.get('search', '', type=str)
+    
+    offset = (page - 1) * limit
     conn = get_db_connection()
-    customers = conn.execute('SELECT * FROM customers ORDER BY id DESC').fetchall()
+    
+    if search:
+        # Search in name, company, phone
+        search_param = f'%{search}%'
+        customers = conn.execute(
+            'SELECT * FROM customers WHERE name LIKE ? OR company LIKE ? OR phone LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?',
+            (search_param, search_param, search_param, limit, offset)
+        ).fetchall()
+        total = conn.execute(
+            'SELECT COUNT(*) FROM customers WHERE name LIKE ? OR company LIKE ? OR phone LIKE ?',
+            (search_param, search_param, search_param)
+        ).fetchone()[0]
+    else:
+        customers = conn.execute('SELECT * FROM customers ORDER BY id DESC LIMIT ? OFFSET ?', (limit, offset)).fetchall()
+        total = conn.execute('SELECT COUNT(*) FROM customers').fetchone()[0]
+    
     conn.close()
-    return jsonify([dict(row) for row in customers])
+    
+    return jsonify({
+        'customers': [dict(row) for row in customers],
+        'total': total,
+        'page': page,
+        'limit': limit,
+        'pages': (total + limit - 1) // limit
+    })
 
 @app.route('/api/customers/<int:id>', methods=['GET'])
 def get_customer(id):

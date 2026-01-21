@@ -44,30 +44,44 @@ class CustomerManager {
 
 // UI Functions for Customer Management
 const CustomerUI = {
-    async renderList() {
-        const customers = await customerManager.getAll();
+    currentPage: 1,
+    searchQuery: '',
+
+    async renderList(page = 1, search = '') {
+        this.currentPage = page;
+        this.searchQuery = search;
+
+        const response = await fetch(`/api/customers?page=${page}&limit=50&search=${encodeURIComponent(search)}`);
+        const data = await response.json();
+
         const tbody = document.getElementById('customers-table-body');
+        const paginationDiv = document.getElementById('customers-pagination');
 
         if (!tbody) return;
 
-        if (customers.length === 0) {
+        // Update total count display
+        const countSpan = document.getElementById('customers-count');
+        if (countSpan) countSpan.textContent = `(${data.total} müşteri)`;
+
+        if (data.customers.length === 0) {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="5" class="empty-state">
                         <i class="fas fa-users"></i>
-                        <p>Henüz müşteri eklenmemiş</p>
+                        <p>${search ? 'Arama sonucu bulunamadı' : 'Henüz müşteri eklenmemiş'}</p>
                     </td>
                 </tr>
             `;
+            if (paginationDiv) paginationDiv.innerHTML = '';
             return;
         }
 
-        tbody.innerHTML = customers.map(c => `
+        tbody.innerHTML = data.customers.map(c => `
             <tr>
-                <td>${escapeHtml(c.name)}</td>
-                <td>${escapeHtml(c.company || '-')}</td>
-                <td>${escapeHtml(c.email || '-')}</td>
-                <td>${escapeHtml(c.phone || '-')}</td>
+                <td data-label="Ad">${escapeHtml(c.name)}</td>
+                <td data-label="Firma">${escapeHtml(c.company || '-')}</td>
+                <td data-label="E-posta">${escapeHtml(c.email || '-')}</td>
+                <td data-label="Telefon">${escapeHtml(c.phone || '-')}</td>
                 <td class="actions">
                     <button onclick="CustomerUI.edit(${c.id})" class="btn-icon" title="Düzenle">
                         <i class="fas fa-edit"></i>
@@ -78,6 +92,30 @@ const CustomerUI = {
                 </td>
             </tr>
         `).join('');
+
+        // Render pagination
+        if (paginationDiv && data.pages > 1) {
+            let paginationHtml = '<div class="pagination">';
+
+            if (page > 1) {
+                paginationHtml += `<button class="btn btn-primary" onclick="CustomerUI.renderList(${page - 1}, '${search}')"><i class="fas fa-chevron-left"></i></button>`;
+            }
+
+            paginationHtml += `<span class="page-info">Sayfa ${page} / ${data.pages}</span>`;
+
+            if (page < data.pages) {
+                paginationHtml += `<button class="btn btn-primary" onclick="CustomerUI.renderList(${page + 1}, '${search}')"><i class="fas fa-chevron-right"></i></button>`;
+            }
+
+            paginationHtml += '</div>';
+            paginationDiv.innerHTML = paginationHtml;
+        } else if (paginationDiv) {
+            paginationDiv.innerHTML = '';
+        }
+    },
+
+    searchCustomers(query) {
+        this.renderList(1, query);
     },
 
     showAddModal() {

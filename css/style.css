@@ -747,6 +747,24 @@ td code {
     font-size: 0.9rem;
 }
 
+/* Pagination */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg) 0;
+}
+
+.pagination .page-info {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.pagination .btn {
+    min-width: 40px;
+}
+
 /* Toast Notifications */
 #toast-container {
     position: fixed;

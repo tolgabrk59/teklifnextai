@@ -133,11 +133,17 @@
         <div id="customers-tab" class="tab-content">
             <div class="card">
                 <div class="card-header">
-                    <h2><i class="fas fa-users"></i> Müşteriler</h2>
-                    <button class="btn btn-primary" onclick="CustomerUI.showAddModal()">
-                        <i class="fas fa-plus"></i>
-                        Yeni Müşteri
-                    </button>
+                    <h2><i class="fas fa-users"></i> Müşteriler <span id="customers-count"
+                            style="font-size: 0.8rem; color: var(--text-muted);"></span></h2>
+                    <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                        <input type="text" id="customer-search" placeholder="Müşteri ara..."
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--border-color); border-radius: 8px; min-width: 200px;"
+                            oninput="CustomerUI.searchCustomers(this.value)">
+                        <button class="btn btn-primary" onclick="CustomerUI.showAddModal()">
+                            <i class="fas fa-plus"></i>
+                            Yeni Müşteri
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="table-container">
@@ -154,13 +160,14 @@
                             <tbody id="customers-table-body">
                                 <tr>
                                     <td colspan="5" class="empty-state">
-                                        <i class="fas fa-users"></i>
-                                        <p>Henüz müşteri eklenmemiş</p>
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <p>Müşteriler yükleniyor...</p>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+                    <div id="customers-pagination"></div>
                 </div>
             </div>
         </div>
