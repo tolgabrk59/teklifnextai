@@ -12,9 +12,11 @@ app = Flask(__name__, static_url_path='', static_folder='.')
 app.secret_key = 'nextai-teklif-sistemi-2026-secret-key'
 DB_NAME = 'sales_quote.db'
 
-# Login credentials
-VALID_USERNAME = 'tolgabrk'
-VALID_PASSWORD = 'Aras2017.'
+# Login credentials - multiple users
+VALID_USERS = {
+    'tolgabrk': 'Aras2017.',
+    'ahmet': '220911Ma'
+}
 
 def login_required(f):
     @wraps(f)
@@ -152,7 +154,7 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        if username == VALID_USERNAME and password == VALID_PASSWORD:
+        if username in VALID_USERS and VALID_USERS[username] == password:
             session['logged_in'] = True
             session['username'] = username
             return redirect(url_for('index'))
