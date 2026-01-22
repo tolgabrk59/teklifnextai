@@ -212,6 +212,24 @@ def get_customers():
         'pages': (total + limit - 1) // limit
     })
 
+@app.route('/api/customers/search', methods=['GET'])
+def search_customers():
+    query = request.args.get('q', '', type=str)
+    limit = request.args.get('limit', 10, type=int)
+    
+    conn = get_db_connection()
+    if query:
+        search_param = f'%{query}%'
+        customers = conn.execute(
+            'SELECT id, name, company, phone FROM customers WHERE name LIKE ? OR company LIKE ? OR phone LIKE ? ORDER BY name LIMIT ?',
+            (search_param, search_param, search_param, limit)
+        ).fetchall()
+    else:
+        customers = conn.execute('SELECT id, name, company, phone FROM customers ORDER BY name LIMIT ?', (limit,)).fetchall()
+    conn.close()
+    
+    return jsonify([dict(row) for row in customers])
+
 @app.route('/api/customers/<int:id>', methods=['GET'])
 def get_customer(id):
     conn = get_db_connection()

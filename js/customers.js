@@ -32,13 +32,19 @@ class CustomerManager {
     }
 
     async getAutocompleteResults(query, limit = 10) {
-        const results = await this.search(query);
-        return results.slice(0, limit).map(c => ({
-            id: c.id,
-            name: c.name,
-            company: c.company,
-            displayText: c.company ? `${c.name} (${c.company})` : c.name
-        }));
+        try {
+            const response = await fetch(`/api/customers/search?q=${encodeURIComponent(query)}&limit=${limit}`);
+            const results = await response.json();
+            return results.map(c => ({
+                id: c.id,
+                name: c.name,
+                company: c.company,
+                displayText: c.company ? `${c.name} (${c.company})` : c.name
+            }));
+        } catch (error) {
+            console.error('Autocomplete error:', error);
+            return [];
+        }
     }
 }
 
