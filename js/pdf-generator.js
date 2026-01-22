@@ -194,15 +194,17 @@ const PDFGenerator = {
                     halign: 'center'
                 },
                 bodyStyles: {
-                    fontSize: 9,
-                    textColor: [50, 50, 50]
+                    fontSize: 8,
+                    textColor: [50, 50, 50],
+                    minCellHeight: 6,
+                    overflow: 'ellipsize'
                 },
                 columnStyles: {
-                    0: { halign: 'left', cellWidth: 'auto' },
+                    0: { halign: 'left', cellWidth: 85 },
                     1: { halign: 'center', cellWidth: 15 },
                     2: { halign: 'center', cellWidth: 20 },
-                    3: { halign: 'right', cellWidth: 30 },
-                    4: { halign: 'right', cellWidth: 30 }
+                    3: { halign: 'right', cellWidth: 25 },
+                    4: { halign: 'right', cellWidth: 25 }
                 },
                 alternateRowStyles: { fillColor: [245, 248, 255] },
                 margin: { left: margin, right: margin }
