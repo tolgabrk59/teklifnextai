@@ -79,9 +79,19 @@ const QuoteUI = {
             return;
         }
 
-        const customers = await customerManager.getAll();
+        // Get unique customer IDs from quotes
+        const customerIds = [...new Set(quotes.map(q => q.customerId))];
+
+        // Fetch customer names by ID
         const customerMap = {};
-        customers.forEach(c => customerMap[c.id] = c);
+        for (const id of customerIds) {
+            try {
+                const customer = await customerManager.get(id);
+                if (customer) customerMap[id] = customer;
+            } catch (e) {
+                console.error('Error fetching customer', id, e);
+            }
+        }
 
         tbody.innerHTML = quotes.map(q => {
             const customer = customerMap[q.customerId];
@@ -145,9 +155,20 @@ const QuoteUI = {
     async filterList(query) {
         const searchTerm = query.toLowerCase().trim();
         const quotes = await quoteManager.getAll();
-        const customers = await customerManager.getAll();
+
+        // Get unique customer IDs from quotes
+        const customerIds = [...new Set(quotes.map(q => q.customerId))];
+
+        // Fetch customer names by ID
         const customerMap = {};
-        customers.forEach(c => customerMap[c.id] = c);
+        for (const id of customerIds) {
+            try {
+                const customer = await customerManager.get(id);
+                if (customer) customerMap[id] = customer;
+            } catch (e) {
+                console.error('Error fetching customer', id, e);
+            }
+        }
 
         const tbody = document.getElementById('quotes-table-body');
         if (!tbody) return;
