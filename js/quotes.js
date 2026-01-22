@@ -100,6 +100,9 @@ const QuoteUI = {
                         <button onclick="QuoteUI.view(${q.id})" class="btn-icon" title="Görüntüle">
                             <i class="fas fa-eye"></i>
                         </button>
+                        <button onclick="QuoteUI.edit(${q.id})" class="btn-icon" title="Düzenle">
+                            <i class="fas fa-edit"></i>
+                        </button>
                         <button onclick="QuoteUI.generatePDF(${q.id})" class="btn-icon" title="PDF İndir">
                             <i class="fas fa-file-pdf"></i>
                         </button>
@@ -227,6 +230,44 @@ const QuoteUI = {
         document.getElementById('quote-notes').value = '';
 
         // Clear items
+        this.renderItems();
+        this.updateTotal();
+
+        Modal.show('quote-modal');
+    },
+
+    async edit(id) {
+        // Load existing quote
+        const quote = await quoteManager.get(id);
+        if (!quote) {
+            showToast('Teklif bulunamadı', 'error');
+            return;
+        }
+
+        // Load customer
+        const customer = await customerManager.get(quote.customerId);
+
+        // Set currentQuote with existing data
+        currentQuote = {
+            id: quote.id,
+            quoteNumber: quote.quoteNumber,
+            customerId: quote.customerId,
+            customerName: customer ? customer.name : '',
+            items: quote.items || [],
+            currency: quote.currency || 'USD',
+            validDays: quote.validDays || 30,
+            notes: quote.notes || '',
+            status: quote.status
+        };
+
+        // Populate form
+        document.getElementById('quote-number').value = quote.quoteNumber;
+        document.getElementById('quote-customer-search').value = customer ? customer.name : '';
+        document.getElementById('quote-currency').value = quote.currency || 'USD';
+        document.getElementById('quote-valid-days').value = quote.validDays || 30;
+        document.getElementById('quote-notes').value = quote.notes || '';
+
+        // Render items and total
         this.renderItems();
         this.updateTotal();
 
@@ -404,12 +445,20 @@ const QuoteUI = {
             currency: document.getElementById('quote-currency').value,
             validDays: parseInt(document.getElementById('quote-valid-days').value) || 30,
             notes: document.getElementById('quote-notes').value.trim(),
-            status: 'draft'
+            status: currentQuote.status || 'draft'
         };
 
         try {
-            await quoteManager.add(quote);
-            showToast('Teklif oluşturuldu', 'success');
+            if (currentQuote.id) {
+                // Update existing quote
+                quote.id = currentQuote.id;
+                await quoteManager.update(quote);
+                showToast('Teklif güncellendi', 'success');
+            } else {
+                // Create new quote
+                await quoteManager.add(quote);
+                showToast('Teklif oluşturuldu', 'success');
+            }
             Modal.hide('quote-modal');
             await this.renderList();
             updateDashboardStats();
