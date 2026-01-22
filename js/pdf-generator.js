@@ -33,6 +33,33 @@ const PDFGenerator = {
                 });
             };
 
+            // Remove Turkish special characters for PDF compatibility
+            const removeTurkishChars = (str) => {
+                if (!str) return '';
+                return str
+                    .replace(/İ/g, 'I')
+                    .replace(/ı/g, 'i')
+                    .replace(/i/g, 'i')  // Keep regular 'i' as 'i'
+                    .replace(/Ğ/g, 'G')
+                    .replace(/ğ/g, 'g')
+                    .replace(/Ü/g, 'U')
+                    .replace(/ü/g, 'u')
+                    .replace(/Ş/g, 'S')
+                    .replace(/ş/g, 's')
+                    .replace(/Ö/g, 'O')
+                    .replace(/ö/g, 'o')
+                    .replace(/Ç/g, 'C')
+                    .replace(/ç/g, 'c');
+            };
+
+            // Truncate text to first N words
+            const truncateToWords = (str, wordCount = 2) => {
+                if (!str) return '-';
+                const words = str.trim().split(/\s+/);
+                if (words.length <= wordCount) return str;
+                return words.slice(0, wordCount).join(' ');
+            };
+
             // Load Logo
             const loadImage = (url) => {
                 return new Promise((resolve) => {
@@ -115,7 +142,7 @@ const PDFGenerator = {
             doc.setFont('helvetica', 'bold');
             doc.text('Firma:', leftColX, startY);
             doc.setFont('helvetica', 'normal');
-            doc.text(customer.company || customer.name || '-', leftColX + 25, startY);
+            doc.text(removeTurkishChars(truncateToWords(customer.company || customer.name || '-', 2)), leftColX + 25, startY);
 
             startY += 6;
             doc.setFont('helvetica', 'bold');
@@ -134,7 +161,7 @@ const PDFGenerator = {
             doc.setFont('helvetica', 'bold');
             doc.text('Yetkili:', leftColX, startY);
             doc.setFont('helvetica', 'normal');
-            doc.text(customer.name, leftColX + 25, startY);
+            doc.text(removeTurkishChars(truncateToWords(customer.name || '-', 2)), leftColX + 25, startY);
 
             startY = y + 7;
             doc.setFont('helvetica', 'bold');
@@ -147,7 +174,7 @@ const PDFGenerator = {
             // --- TABLE ---
             const tableHeaders = [['ACIKLAMA', 'MIKTAR', 'BIRIM', 'BIRIM FIYAT', 'TUTAR']];
             const tableData = quote.items.map(item => [
-                item.productCode + ' - ' + item.productName,
+                removeTurkishChars(item.productCode + ' - ' + item.productName),
                 item.quantity,
                 item.unit,
                 formatMoney(item.unitPrice, quote.currency),
