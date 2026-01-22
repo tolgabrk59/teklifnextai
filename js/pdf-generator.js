@@ -200,8 +200,8 @@ const PDFGenerator = {
                     overflow: 'ellipsize'
                 },
                 columnStyles: {
-                    0: { halign: 'left', cellWidth: 85 },
-                    1: { halign: 'center', cellWidth: 15 },
+                    0: { halign: 'left', cellWidth: 80 },
+                    1: { halign: 'center', cellWidth: 20 },
                     2: { halign: 'center', cellWidth: 20 },
                     3: { halign: 'right', cellWidth: 25 },
                     4: { halign: 'right', cellWidth: 25 }
